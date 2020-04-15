@@ -1,12 +1,25 @@
 <html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='css/css.css' >
+  </head>
  <body>
+    <FORM class="choixPlayer" >
+      <SELECT id="choixPlayer" onChange="game.setMainPlayer()">
+        <OPTION VALUE="0" SELECTED>Choix du player </OPTION>
+        <OPTION VALUE="1">Player 1</OPTION>
+        <OPTION VALUE="2">Player 2</OPTION>
+      </SELECT>
+      <BUTTON>Start</BUTTON>
+    </FORM>
  </body>
+
  <script src="http://localhost:3000/socket.io/socket.io.js/"></script>
  <script src="./js/game.js"></script>
  <script src="./js/game.display.js"></script>
  <script src="./js/game.control.js"></script>
  <script src="./js/game.keycode.js"></script>
  <script src="./js/game.ai.js"></script>
+ <script src="./js/game.config.js"></script>
 <script>
 (function () {
   // début du code isolé
@@ -21,11 +34,12 @@
   var main = function() {
     // le code du jeu
     game.clearLayer(game.playersBallLayer);
-    game.movePlayers();
+    // game.movePlayers();
     game.displayPlayers();
-    game.moveBall();
-    game.ai.move();
-    game.collideBallWithPlayersAndAction();
+    game.displayBall();
+    if (game.mainPlayer == 1){
+      game.score();
+    }
     requestAnimId = window.requestAnimationFrame(main); // rappel de main au prochain rafraîchissement de la page
   }
   
@@ -35,3 +49,4 @@
 })();
 </script> 
 </html>
+

@@ -1,33 +1,25 @@
 game.control = {
 	mousePointer : null,
 	controlSystem: null,
+	currentPlayer: null,
 	onKeyDown : function(event) {
 		game.control.controlSystem = "KEYBOARD";
 		if ( event.keyCode == game.keycode.KEYDOWN ) {
-			game.playerOne.goDown = true;
+			console.log("i go down");
+			game.players[game.control.currentPlayer].goDown = true;
 		} else if ( event.keyCode == game.keycode.KEYUP ) {
-			game.playerOne.goUp = true;
+			game.players[game.control.currentPlayer].goUp = true;
 		}
-		toSend= {
-			source: "player1",
-			player: game.playerOne
-		}
-		game.playerOne.source = "player2";
-		game.socket.emit("playerOne",toSend);
+		game.socket.emit("updateMove",game.players);
 	},
 
 	onKeyUp : function(event) {
 		if ( event.keyCode == game.keycode.KEYDOWN ) {
-			game.playerOne.goDown = false;
+			game.players[game.control.currentPlayer].goDown = false;
 		} else if ( event.keyCode == game.keycode.KEYUP ) {
-			game.playerOne.goUp = false;
+			game.players[game.control.currentPlayer].goUp = false;
 		}
-		toSend= {
-			source: "player1",
-			player: game.playerOne
-		}
-		game.playerOne.source = "player2";
-		game.socket.emit("playerOne",toSend);
+		game.socket.emit("updateMove",game.players);
 	},
 
 	onMouseMove : function(event) {
