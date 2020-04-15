@@ -8,9 +8,11 @@
         <OPTION VALUE="0" SELECTED>Choix du player </OPTION>
         <OPTION VALUE="1">Player 1</OPTION>
         <OPTION VALUE="2">Player 2</OPTION>
+        <OPTION VALUE="3">Player 3</OPTION>
+        <OPTION VALUE="4">Player 4</OPTION>
       </SELECT>
-      <BUTTON>Start</BUTTON>
     </FORM>
+    <BUTTON class="choixPlayer" onClick="game.playerIsReady()">Start</BUTTON>
  </body>
 
  <script src="http://localhost:3000/socket.io/socket.io.js/"></script>
@@ -26,17 +28,13 @@
   var requestAnimId;
   
   var initialisation = function() {
+    game.requestGameDatas();
     // le code de l'initialisation
-    game.init();
     requestAnimId = window.requestAnimationFrame(main); // premier appel de main au rafraîchissement de la page
   }
   
   var main = function() {
     // le code du jeu
-    game.clearLayer(game.playersBallLayer);
-    // game.movePlayers();
-    game.displayPlayers();
-    game.displayBall();
     if (game.mainPlayer == 1){
       game.score();
     }

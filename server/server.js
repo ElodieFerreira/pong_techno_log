@@ -1,18 +1,8 @@
 var io = require("socket.io");
 var sockets = io.listen(3000);
 var players = [];
-players[1]= {
-      id:2,
-      width : 10,
-      height : 50,
-      color : "#FFFFFF",
-      posX : 600,
-      posY : 200,
-      goUp : false,
-      goDown : false, 
-    originalPosition: "left",
-    score : 0,}
 players[0]= {  id:1,
+      ready : false,
       width : 10,
       height : 50,
       color : "#FFFFFF",
@@ -22,6 +12,40 @@ players[0]= {  id:1,
       goDown : false,
     originalPosition: "left",
     score : 0,};
+players[1]= {
+      id:2,
+      ready : false,
+      width : 10,
+      height : 50,
+      color : "#FFFFFF",
+      posX : 600,
+      posY : 200,
+      goUp : false,
+      goDown : false, 
+    originalPosition: "left",
+    score : 0,}
+players[2]= {  id:1,
+      width : 10,
+      height : 50,
+      color : "#FFFFFF",
+      posX : 75,
+      posY : 100,
+      goUp : false,
+      goDown : false,
+    originalPosition: "left",
+    score : 0,};
+
+players[3]= {
+      id:2,
+      width : 10,
+      height : 50,
+      color : "#FFFFFF",
+      posX : 600,
+      posY : 100,
+      goUp : false,
+      goDown : false, 
+    originalPosition: "left",
+    score : 0,}
 var intervalID = 0;
 var game = { control: { controlSystem :"KEYBOARD"}};
 sockets.on('connection', function (socket) {
@@ -33,13 +57,22 @@ sockets.on('connection', function (socket) {
         sockets.emit("move",players);
     });
     socket.on('score',function(score1,score2){
+        players[0].score=score1;
+        players[1].score=score2;
         sockets.emit('score',score1,score2);
     });
-    socket.on("ready",function(data) {
+    socket.on("ready",function(index) {
       //noting
-      players=data;
-      console.log("going to start");
-      intervalID = setInterval(mainBall,20);
+      players[index].ready=true;
+      readyToStart=true;
+      for(let index in players) {
+        if(!players[index].ready) readyToStart=false;
+      }
+      if(readyToStart) intervalID = setInterval(mainBall,20);
+      
+    });
+    socket.on("requestGameDatas",function(){
+      sockets.emit("requestGameDatas",ball,players);
     })
 });
 
@@ -67,6 +100,7 @@ var ball = {
         }
       },
       collide : function(anotherItem) {
+            if(typeof anotherItem !== "undefined")
             if ( !( this.posX >= anotherItem.posX + anotherItem.width || this.posX <= anotherItem.posX
               || this.posY >= anotherItem.posY + anotherItem.height || this.posY <= anotherItem.posY ) ) {
         // Collision
@@ -81,18 +115,19 @@ var moveTools= {
     ball.bounce(this.wallSound);
   },
     collideBallWithPlayersAndAction : function(ball) { 
-    if ( ball.collide(players[0]) ) {
+    if ( ball.collide(players[0]) || ball.collide(players[2]) ) {
       ball.directionX = -ball.directionX;
       //this.colideSound.play()
     }
-    if ( ball.collide(players[1]) ) {
+    if ( ball.collide(players[1]) || ball.collide(players[3]) )  {
       ball.directionX = -ball.directionX;
       //this.colideSound.play()
     }
   },
   movePlayers : function() {
-    moveTools.movePlayer(players[0]);
-    moveTools.movePlayer(players[1]);
+    for(let index in players) {
+      moveTools.movePlayer(players[index]);
+    }
   },
   // Move a player
     movePlayer : function(player) {

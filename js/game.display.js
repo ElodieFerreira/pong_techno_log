@@ -1,6 +1,6 @@
 game.display = {
+  displayed: false,
   container : "",
-  
   layer : {
     name : "",
     canvas : "",
