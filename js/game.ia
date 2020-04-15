@@ -1,4 +1,0 @@
-game.ai = {
-  player : null,
-  ball : null
-}
