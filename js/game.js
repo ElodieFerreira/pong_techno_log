@@ -28,10 +28,17 @@ var game = {
     requestGameDatas: function() {
       this.socket = io.connect('http://localhost:3000/');
       this.socket.emit("requestGameDatas");
-      this.socket.once("requestGameDatas",function(ball,players){
+      this.socket.once("requestGameDatas",function(ball,players,isNumberOfPlayerSet){
         game.ball=ball;
         game.players=players;
         game.init()
+        if(isNumberOfPlayerSet){
+        	game.display.choosePlayer();
+        } else {
+        	game.socket.once("updateNumbersOfPlayers",function(){
+        		    location.reload();
+        	})
+        }
       })
     },
     init : function() {
@@ -43,6 +50,11 @@ var game = {
     	this.displayBall();
     	this.displayPlayers();
     	this.initKeyboard(game.control.onKeyDown,game.control.onKeyUp);
+	},
+	choosePlayer: function(){
+		console.log("ichosse");
+		var numberOfPlayer = document.querySelector('input[name="numberOfPlayer"]:checked').value;
+		this.socket.emit("numberOfPlayer",parseInt(numberOfPlayer));
 	},
   playerIsReady: function(){
     if(game.mainPlayer!=0&&game.mainPlayer!=null) {

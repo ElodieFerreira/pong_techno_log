@@ -2,17 +2,24 @@
   <head>
     <link rel='stylesheet' type='text/css' href='css/css.css' >
   </head>
- <body>
-    <FORM class="choixPlayer" >
+ <body> 
+    <form class="createRoom" id="numberForm">
+      <input type="radio" id="choice2Player" name="numberOfPlayer" value="2" checked>
+      <label for="choice2Player">2 players</label>
+      <input type="radio" id="choice4Player" name="numberOfPlayer" value="4">
+      <label for="choice2Player">4 players</label>
+      <button onClick="game.choosePlayer()">Ok</button>
+    </form>
+    <FORM class="choixPlayer hide" id="playerForm">
       <SELECT id="choixPlayer" onChange="game.setMainPlayer()">
         <OPTION VALUE="0" SELECTED>Choix du player </OPTION>
         <OPTION VALUE="1">Player 1</OPTION>
         <OPTION VALUE="2">Player 2</OPTION>
-        <OPTION VALUE="3">Player 3</OPTION>
-        <OPTION VALUE="4">Player 4</OPTION>
+        <OPTION class="optional" VALUE="3">Player 3</OPTION>
+        <OPTION class="optional" VALUE="4">Player 4</OPTION>
       </SELECT>
     </FORM>
-    <BUTTON class="choixPlayer" onClick="game.playerIsReady()">Start</BUTTON>
+           <BUTTON class="choixPlayer hide" id="playerSubmit" onClick="game.playerIsReady()">Start</BUTTON>  
  </body>
 
  <script src="http://localhost:3000/socket.io/socket.io.js/"></script>

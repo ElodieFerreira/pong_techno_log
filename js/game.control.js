@@ -5,7 +5,6 @@ game.control = {
 	onKeyDown : function(event) {
 		game.control.controlSystem = "KEYBOARD";
 		if ( event.keyCode == game.keycode.KEYDOWN ) {
-			console.log("i go down");
 			game.players[game.control.currentPlayer].goDown = true;
 		} else if ( event.keyCode == game.keycode.KEYUP ) {
 			game.players[game.control.currentPlayer].goUp = true;

@@ -1,3 +1,6 @@
-.choixPlayer{
+.choixPlayer, .createRoom{
     margin-left: 700px;
   }
+.hide {
+	display:none;
+}

@@ -70,4 +70,16 @@ game.display = {
     targetLayer.context2D.fillStyle = color;
     targetLayer.context2D.fillText(text, x, y);
   },
+  choosePlayer(){
+    number_form = document.getElementById("numberForm");
+    number_form.parentNode.removeChild(numberForm);
+    document.getElementById("playerForm").style.display="block";
+    document.getElementById("playerSubmit").style.display="block";
+    if(game.players.length==2) {
+      to_delete = document.getElementsByClassName("optional");
+      for(var i=to_delete.length-1;i>=0;i--){
+        to_delete[i].parentNode.removeChild(to_delete[i]);
+      }
+    }
+  }
 }

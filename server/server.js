@@ -1,10 +1,11 @@
 var io = require("socket.io");
 var sockets = io.listen(3000);
+optional_players = [];
 var players = [];
 players[0]= {  id:1,
       ready : false,
       width : 10,
-      height : 50,
+      height : 60,
       color : "#FFFFFF",
       posX : 75,
       posY : 200,
@@ -16,7 +17,7 @@ players[1]= {
       id:2,
       ready : false,
       width : 10,
-      height : 50,
+      height : 60,
       color : "#FFFFFF",
       posX : 600,
       posY : 200,
@@ -24,29 +25,30 @@ players[1]= {
       goDown : false, 
     originalPosition: "left",
     score : 0,}
-players[2]= {  id:1,
+optional_players[0]= {  id:1,
       width : 10,
-      height : 50,
+      height : 60,
       color : "#FFFFFF",
-      posX : 75,
+      posX : 125,
       posY : 100,
       goUp : false,
       goDown : false,
     originalPosition: "left",
     score : 0,};
 
-players[3]= {
+optional_players[1]= {
       id:2,
       width : 10,
-      height : 50,
+      height : 60,
       color : "#FFFFFF",
-      posX : 600,
+      posX : 550,
       posY : 100,
       goUp : false,
       goDown : false, 
     originalPosition: "left",
     score : 0,}
 var intervalID = 0;
+var numberIsSet = false;
 var game = { control: { controlSystem :"KEYBOARD"}};
 sockets.on('connection', function (socket) {
     socket.on('updateMove', function (data) {
@@ -68,11 +70,20 @@ sockets.on('connection', function (socket) {
       for(let index in players) {
         if(!players[index].ready) readyToStart=false;
       }
-      if(readyToStart) intervalID = setInterval(mainBall,20);
+      if(readyToStart) intervalID = setInterval(mainBall,15);
       
     });
     socket.on("requestGameDatas",function(){
-      sockets.emit("requestGameDatas",ball,players);
+      console.log(numberIsSet);
+      sockets.emit("requestGameDatas",ball,players,numberIsSet);
+    })
+    socket.on("numberOfPlayer",function(numberOfPlayer){
+      if(numberOfPlayer!=2){
+        players[2]=optional_players[0];
+        players[3]=optional_players[1];
+      }
+      numberIsSet = true;
+      sockets.emit("updateNumbersOfPlayers");
     })
 });
 
