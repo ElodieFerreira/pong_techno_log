@@ -9,6 +9,7 @@ var game = {
 	// datas for scorePlayer
 	scorePosPlayer1 : 270,
 	scorePosPlayer2 : 395,
+	isWinned: false,
   // datas for ball
   ball : null,
   //datas for racket
@@ -52,9 +53,9 @@ var game = {
     	this.initKeyboard(game.control.onKeyDown,game.control.onKeyUp);
 	},
 	choosePlayer: function(){
-		console.log("ichosse");
 		var numberOfPlayer = document.querySelector('input[name="numberOfPlayer"]:checked').value;
 		this.socket.emit("numberOfPlayer",parseInt(numberOfPlayer));
+		window.focus();
 	},
   playerIsReady: function(){
     if(game.mainPlayer!=0&&game.mainPlayer!=null) {
@@ -107,7 +108,11 @@ var game = {
 		//console.log("player1 : "+game.playerOne.score+"Player2 : "+game.playerTwo.score);
 		game.clearLayer(game.scoreLayer);
 		game.displayScore(game.players[0].score,game.players[1].score);
-	})
+	});
+	this.socket.on("win",function(data){
+			game.isWinned = true;
+			game.display.drawTextInLayer(game.scoreLayer,"The team "+data+" winned !","60px Arial", "#FFFFFF", 90, 320)
+	});
 	},
 	//displays function
 	displayScore : function(scorePlayer1, scorePlayer2) {

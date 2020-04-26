@@ -49,7 +49,7 @@ optional_players[1]= {
     score : 0,}
 var intervalID = 0;
 var numberIsSet = false;
-var game = { control: { controlSystem :"KEYBOARD"}};
+var gameIsStarted = false;
 sockets.on('connection', function (socket) {
     socket.on('updateMove', function (data) {
         for(let item in data) {
@@ -62,6 +62,13 @@ sockets.on('connection', function (socket) {
         players[0].score=score1;
         players[1].score=score2;
         sockets.emit('score',score1,score2);
+        if(players[0].score>=10) {
+          sockets.emit("win",1);
+          clearInterval(intervalID);
+        } else if (players[1].score>=10){
+          sockets.emit("win",2);
+          clearInterval(intervalID);
+        }
     });
     socket.on("ready",function(index) {
       //noting
@@ -70,8 +77,10 @@ sockets.on('connection', function (socket) {
       for(let index in players) {
         if(!players[index].ready) readyToStart=false;
       }
-      if(readyToStart) intervalID = setInterval(mainBall,15);
-      
+      if(readyToStart&&!gameIsStarted) {
+          intervalID = setInterval(mainBall,15);
+          gameIsStarted = true;
+      }      
     });
     socket.on("requestGameDatas",function(){
       console.log(numberIsSet);
@@ -142,22 +151,13 @@ var moveTools= {
   },
   // Move a player
     movePlayer : function(player) {
-    if ( game.control.controlSystem == "KEYBOARD" ) {
     // keyboard control
       if (player.goUp && player.posY > 0) {
         player.posY-=7;
       }
       else if (player.goDown && player.posY < 400 - player.height) {
         player.posY+=7;
-      } else if ( game.control.controlSystem == "MOUSE" ) {
-        //mouse control
-        if (game.playerOne.goUp && game.playerOne.posY > game.control.mousePointer) {
-        player.posY-=5;
-        } else if (game.playerOne.goDown && game.playerOne.posY < game.control.mousePointer) {
-          player.posY+=5;
-        }
-      }
-    }
+      } 
     },
 }
 

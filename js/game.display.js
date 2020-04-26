@@ -48,8 +48,8 @@ game.display = {
  
     if ( y != undefined )
       layer.canvas.style.top = y;
- 
     if ( htmlContainer != undefined ) {
+      console.log("je passe ici")
       htmlContainer.appendChild(layer.canvas);
     } else {
       document.body.appendChild(layer.canvas);
