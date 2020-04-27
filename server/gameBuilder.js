@@ -8,6 +8,7 @@ class gameBuilder {
       intervalID: null,
       gameIsStarted: false,
       readyToStart:false,
+      numberOfPlayersInRoom:0,
 		}
 		for(let i=0;i<numberOfPlayers;i++){
 			gameToSend.players[i]= JSON.parse(JSON.stringify(players[i]));

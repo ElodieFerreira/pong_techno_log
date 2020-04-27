@@ -4,24 +4,23 @@
   </head>
  <body> 
   <div id="left" style="float:left;display:block;width:200px;height:100px;border: 1px solid #0000FF;">
-    <form class="createRoom">
-      <input type="radio" id="choice2Player" name="numberOfPlayer" value="2" checked>
-      <label for="choice2Player">2 players</label>
-      <input type="radio" id="choice4Player" name="numberOfPlayer" value="4">
-      <label for="choice2Player">4 players</label>
+    <form class="createRoom" id="createRoomForm">
+      <input type="radio" id="2players" name="numberOfPlayer" value="2" checked>
+      <label for="2players">2 players</label>
+      <input type="radio" id="4players" name="numberOfPlayer" value="4">
+      <label for="4players">4 players</label>
       <label for="nameRoom">Room</label>
       <input placeholder="Name of Room" id="nameRoom">
     </form>
     <button onClick="game.choosePlayer()">Ok</button>
-    <FORM class="choixPlayer hide" id="playerForm">
-      <SELECT id="choixPlayer" onChange="game.setMainPlayer(); this.blur();">
-        <OPTION VALUE="0" SELECTED>Choix du player </OPTION>
-        <OPTION VALUE="1">Player 1</OPTION>
-        <OPTION VALUE="2">Player 2</OPTION>
-        <OPTION class="optional" VALUE="3">Player 3</OPTION>
-        <OPTION class="optional" VALUE="4">Player 4</OPTION>
-      </SELECT>
-    </FORM>
+    <form class="choixPlayer hide" id="playerForm">
+      <select id="choixPlayer" onChange="game.setMainPlayer(); this.blur();">
+<!--         <option value="1">Player 1</OPTION>
+        <option value="2">Player 2</OPTION>
+        <option class="hide" value="3">Player 3</OPTION>
+        <option class="hide" value="4">Player 4</OPTION> -->
+      </select>
+    </form>
            <BUTTON class="choixPlayer hide" id="playerSubmit" onClick="game.playerIsReady()">Start</BUTTON> 
   </div> 
   <div id="divGame"></div>

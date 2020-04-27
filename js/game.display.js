@@ -70,17 +70,14 @@ game.display = {
     targetLayer.context2D.fillStyle = color;
     targetLayer.context2D.fillText(text, x, y);
   },
-  choosePlayer: function(){
-    number_form = document.getElementById("numberForm");
-    number_form.parentNode.removeChild(numberForm);
-    document.getElementById("playerForm").style.display="block";
-    document.getElementById("playerSubmit").style.display="block";
-    if(game.players.length==2) {
-      to_delete = document.getElementsByClassName("optional");
-      for(var i=to_delete.length-1;i>=0;i--){
-        to_delete[i].parentNode.removeChild(to_delete[i]);
-      }
-    }
+  deleteForm: function(){
+    numberForm = document.getElementById("left");
+    numberForm.parentNode.removeChild(numberForm);
+    divRoom = document.getElementById("divRoom");
+    divRoom.parentNode.removeChild(divRoom);
+    messageDiv = document.createElement("div");
+    messageDiv.innerHTML = "You are in a room "+game.nameRoom;
+    document.body.appendChild(messageDiv);
   },
   displayRooms:function(rooms){
     var divRoom = document.getElementById("divRoom");
@@ -93,5 +90,8 @@ game.display = {
         }
         divRoom.appendChild(btn);
     }
+  },
+  displayError: function(error){
+    alert(error);
   }
 }

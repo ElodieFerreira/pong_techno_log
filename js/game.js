@@ -15,12 +15,6 @@ var game = {
 	ball : null,
 	players : [],
 	mainPlayer : null,
-	setMainPlayer : function(){
-		var myselect = document.getElementById("choixPlayer");
-		this.mainPlayer = myselect.options[myselect.selectedIndex].value;
-    game.control.currentPlayer = parseInt(this.mainPlayer)-1;
-    this.initConnection()
-  	},
 	// socket
 	socket: null,
     requestRooms: function() {
@@ -31,18 +25,23 @@ var game = {
 	  		console.log(rooms);
       		game.display.displayRooms(rooms);
       	});
-	    this.socket.once("requestGameDatas",function(ball,players,isNumberOfPlayerSet){
-        game.ball=ball;
-        game.players=players;
-        game.init()
-        if(isNumberOfPlayerSet){
-        	game.display.choosePlayer();
+	  subcribeGameDatas= function(){game.socket.once("requestGameDatas",function(ball,players,isNumberOfPlayerSet,mainPlayerNumber){
+        console.log(typeof ball);
+        if(typeof ball!="string") {
+        		game.ball=ball;
+        		game.players=players;
+        		game.init()
+        		game.mainPlayer=mainPlayerNumber-1;
+        		game.control.currentPlayer=mainPlayerNumber-1;
+       			game.display.deleteForm();
         } else {
-        	game.socket.once("updateNumbersOfPlayers",function(){
-        		/*    location.reload();*/
-        	})
+        	game.display.displayError(ball);
+        	abonnement();
         }
-      })
+      });
+  	}
+  	  subcribeGameDatas();
+	  game.initConnection();
     },
     init : function() {
     	this.groundLayer = game.display.createLayer("terrain", this.groundWidth, this.groundHeight, undefined, 0, "#000000", 0, 0); 
@@ -58,17 +57,7 @@ var game = {
 		var numberOfPlayer = document.querySelector('input[name="numberOfPlayer"]:checked').value;
 		game.nameRoom = document.getElementById("nameRoom").value;
 		this.socket.emit("createRoom",game.nameRoom,parseInt(numberOfPlayer))
-		this.socket.on("test",function(data){
-			console.log(data);
-		})
-		this.socket.emit("numberOfPlayer",parseInt(numberOfPlayer));
 	},
-  playerIsReady: function(){
-    if(game.mainPlayer!=0&&game.mainPlayer!=null) {
-        console.log("player "+game.mainPlayer+" is ready");
-        game.socket.emit("ready",game.mainPlayer-1,game.nameRoom);
-    }
-  },
 	//Affichage des scores
 	score : function(){
 		if(game.ball.posX <= -3){
