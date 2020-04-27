@@ -1,4 +1,5 @@
-var io = require("socket.io");
+const io = require("socket.io");
+const gameBuilder = require("./gameBuilder");
 var sockets = io.listen(3000);
 optional_players = [];
 var players = [];
@@ -45,19 +46,61 @@ optional_players[1]= {
       posY : 100,
       goUp : false,
       goDown : false, 
-    originalPosition: "left",
-    score : 0,}
+      originalPosition: "left",
+      score : 0,}
 var intervalID = 0;
 var numberIsSet = false;
 var gameIsStarted = false;
-sockets.on('connection', function (socket) {
-    socket.on('updateMove', function (data) {
-        for(let item in data) {
-          players[item].goUp = data[item].goUp;
-          players[item].goDown = data[item].goDown;
-        } 
-        sockets.emit("move",players);
+let games = new Map();
+sockets.on("connection",function(socket){
+    socket.on("getRooms",function(){
+      var keys = [...games.keys()];
+      sockets.emit("rooms",keys);
+    })
+    socket.on("createRoom",function(name,numberOfPlayers){
+        console.log(name);
+        socket.join(name);
+        games.set(name,gameBuilder.buildGame(numberOfPlayers));
+        sockets.in(name).emit("requestGameDatas",games.get(name).ball,games.get(name).players,true)
+        //TO DO : Emit when a new Room when is created to updata windows already open.
+    })
+    socket.on("joinARoom",function(name){
+      socket.join(name);
+      sockets.to(name).emit("requestGameDatas",games.get(name).ball,games.get(name).players,true)
+    })
+    socket.on("ready",function(index,nameofroom) {
+      //noting
+      games.get(nameofroom).players[index].ready=true;
+      games.get(nameofroom).readyToStart=true;
+      for(let index in games.get(nameofroom).players) {
+        if(!games.get(nameofroom).players[index].ready) games.get(nameofroom).readyToStart=false;
+      }
+      if(games.get(nameofroom).readyToStart&&!games.get(nameofroom).gameIsStarted) {
+          games.get(nameofroom).intervalID = setInterval(mainBall.bind(null,nameofroom),15);
+          games.get(nameofroom).gameIsStarted = true;
+      }      
     });
+    socket.on('updateMove', function (players,nameofroom) {
+        for(let index in players) {
+          games.get(nameofroom).players[index].goUp = players[index].goUp;
+          games.get(nameofroom).players[index].goDown = players[index].goDown;
+        } 
+        sockets.in(nameofroom).emit("move",games.get(nameofroom).players);
+    });
+    socket.on('scoreUpdated',function(score1,score2,nameofroom){
+        games.get(nameofroom).players[0].score=score1;
+        games.get(nameofroom).players[1].score=score2;
+        sockets.in(nameofroom).emit('score',score1,score2);
+        if(games.get(nameofroom).players[0].score>=10) {
+          sockets.emit("win",1);
+          clearInterval(games.get(nameofroom).intervalID);
+        } else if (games.get(nameofroom).players[1].score>=10){
+          sockets.emit("win",2);
+          clearInterval(games.get(nameofroom).intervalID);
+        }
+    });
+});
+/*sockets.on('connection', function (socket) {
     socket.on('score',function(score1,score2){
         players[0].score=score1;
         players[1].score=score2;
@@ -69,18 +112,6 @@ sockets.on('connection', function (socket) {
           sockets.emit("win",2);
           clearInterval(intervalID);
         }
-    });
-    socket.on("ready",function(index) {
-      //noting
-      players[index].ready=true;
-      readyToStart=true;
-      for(let index in players) {
-        if(!players[index].ready) readyToStart=false;
-      }
-      if(readyToStart&&!gameIsStarted) {
-          intervalID = setInterval(mainBall,15);
-          gameIsStarted = true;
-      }      
     });
     socket.on("requestGameDatas",function(){
       console.log(numberIsSet);
@@ -95,7 +126,7 @@ sockets.on('connection', function (socket) {
       sockets.emit("updateNumbersOfPlayers");
     })
 });
-
+*/
 var ball = {
       width : 10,
       height : 10,
@@ -134,7 +165,7 @@ var moveTools= {
     ball.move();
     ball.bounce(this.wallSound);
   },
-    collideBallWithPlayersAndAction : function(ball) { 
+    collideBallWithPlayersAndAction : function(ball,players) { 
     if ( ball.collide(players[0]) || ball.collide(players[2]) ) {
       ball.directionX = -ball.directionX;
       //this.colideSound.play()
@@ -144,9 +175,9 @@ var moveTools= {
       //this.colideSound.play()
     }
   },
-  movePlayers : function() {
-    for(let index in players) {
-      moveTools.movePlayer(players[index]);
+  movePlayers : function(nameofroom) {
+    for(let index in games.get(nameofroom).players) {
+      moveTools.movePlayer(games.get(nameofroom).players[index]);
     }
   },
   // Move a player
@@ -161,10 +192,10 @@ var moveTools= {
     },
 }
 
-mainBall = function(){
-      moveTools.movePlayers();
-      moveTools.moveBall(ball);
-      moveTools.collideBallWithPlayersAndAction(ball)
-      sockets.emit("ball",ball,players);
+mainBall = function(nameofroom){
+      moveTools.movePlayers(nameofroom);
+      moveTools.moveBall(games.get(nameofroom).ball);
+      moveTools.collideBallWithPlayersAndAction(games.get(nameofroom).ball,games.get(nameofroom).players)
+      sockets.in(nameofroom).emit("ball",games.get(nameofroom).ball,games.get(nameofroom).players);
 }
 

@@ -1,21 +1,23 @@
 // class to Build a game
 class gameBuilder {
 	static buildGame(numberOfPlayers,portGame) {
+    let gameToSend;
 		gameToSend= {
 			players: [],
 			ball: null,
-			port: null,
+      intervalID: null,
+      gameIsStarted: false,
+      readyToStart:false,
 		}
-		for(let i=0,i<numberOfPlayers,i++){
-			players[i]=gameToSend.players[i];
+		for(let i=0;i<numberOfPlayers;i++){
+			gameToSend.players[i]= JSON.parse(JSON.stringify(players[i]));
 		}
-		gameToSend.ball = getBallAtInitialisation();
+		gameToSend.ball = gameBuilder.getBallAtInitialisation();
 		gameToSend.port = portGame;
 		return gameToSend;
 	}
-
 	
-	getBallAtInitialisation(){
+	static getBallAtInitialisation(){
 	return {
       width : 10,
       height : 10,
@@ -51,6 +53,8 @@ class gameBuilder {
 	};
 	}
 }
+
+//model datas
 var game_model = {
 	players: [],
 	ball: null,
@@ -102,7 +106,5 @@ players[3]= {
       goDown : false, 
     originalPosition: "left",
     score : 0,}
-
-
 
 module.exports = gameBuilder;

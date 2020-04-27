@@ -9,7 +9,7 @@ game.control = {
 		} else if ( event.keyCode == game.keycode.KEYUP ) {
 			game.players[game.control.currentPlayer].goUp = true;
 		}
-		game.socket.emit("updateMove",game.players);
+		game.socket.emit("updateMove",game.players,game.nameRoom);
 	},
 
 	onKeyUp : function(event) {
@@ -18,7 +18,7 @@ game.control = {
 		} else if ( event.keyCode == game.keycode.KEYUP ) {
 			game.players[game.control.currentPlayer].goUp = false;
 		}
-		game.socket.emit("updateMove",game.players);
+		game.socket.emit("updateMove",game.players,game.nameRoom);
 	},
 
 	onMouseMove : function(event) {

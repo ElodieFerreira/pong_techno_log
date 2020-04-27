@@ -48,8 +48,8 @@ game.display = {
  
     if ( y != undefined )
       layer.canvas.style.top = y;
+    htmlContainer = document.getElementById("divGame");
     if ( htmlContainer != undefined ) {
-      console.log("je passe ici")
       htmlContainer.appendChild(layer.canvas);
     } else {
       document.body.appendChild(layer.canvas);
@@ -70,7 +70,7 @@ game.display = {
     targetLayer.context2D.fillStyle = color;
     targetLayer.context2D.fillText(text, x, y);
   },
-  choosePlayer(){
+  choosePlayer: function(){
     number_form = document.getElementById("numberForm");
     number_form.parentNode.removeChild(numberForm);
     document.getElementById("playerForm").style.display="block";
@@ -80,6 +80,18 @@ game.display = {
       for(var i=to_delete.length-1;i>=0;i--){
         to_delete[i].parentNode.removeChild(to_delete[i]);
       }
+    }
+  },
+  displayRooms:function(rooms){
+    var divRoom = document.getElementById("divRoom");
+    for(let index in rooms){
+        var btn = document.createElement("BUTTON");
+        btn.innerHTML = rooms[index];
+        btn.onclick = function(){
+          game.nameRoom = rooms[index];
+          game.socket.emit("joinARoom",game.nameRoom);
+        }
+        divRoom.appendChild(btn);
     }
   }
 }

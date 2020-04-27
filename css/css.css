@@ -1,6 +1,3 @@
-.choixPlayer, .createRoom{
-    margin-left: 700px;
-  }
 .hide {
 	display:none;
 }
@@ -18,4 +15,11 @@ canvas {
     left: 0;
     right: 0;
 }
-
+body{
+	display:flex;
+	flex-direction: column;		
+}
+div {
+	margin:20px;
+	flex-direction: column;	
+}

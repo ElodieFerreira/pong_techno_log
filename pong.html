@@ -3,13 +3,16 @@
     <link rel='stylesheet' type='text/css' href='css/css.css' >
   </head>
  <body> 
-    <form class="createRoom" id="numberForm">
+  <div id="left" style="float:left;display:block;width:200px;height:100px;border: 1px solid #0000FF;">
+    <form class="createRoom">
       <input type="radio" id="choice2Player" name="numberOfPlayer" value="2" checked>
       <label for="choice2Player">2 players</label>
       <input type="radio" id="choice4Player" name="numberOfPlayer" value="4">
       <label for="choice2Player">4 players</label>
-      <button onClick="game.choosePlayer()">Ok</button>
+      <label for="nameRoom">Room</label>
+      <input placeholder="Name of Room" id="nameRoom">
     </form>
+    <button onClick="game.choosePlayer()">Ok</button>
     <FORM class="choixPlayer hide" id="playerForm">
       <SELECT id="choixPlayer" onChange="game.setMainPlayer(); this.blur();">
         <OPTION VALUE="0" SELECTED>Choix du player </OPTION>
@@ -19,9 +22,13 @@
         <OPTION class="optional" VALUE="4">Player 4</OPTION>
       </SELECT>
     </FORM>
-           <BUTTON class="choixPlayer hide" id="playerSubmit" onClick="game.playerIsReady()">Start</BUTTON>  
+           <BUTTON class="choixPlayer hide" id="playerSubmit" onClick="game.playerIsReady()">Start</BUTTON> 
+  </div> 
+  <div id="divGame"></div>
+    <div id="divRoom" style="float:left;display:inline-block;width:200px;height:100px;border: 1px solid #0000FF;">
+      <div>
  </body>
- <script src="http://localhost:3000/socket.io/socket.io.js/"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
  <script src="./js/game.js"></script>
  <script src="./js/game.display.js"></script>
  <script src="./js/game.control.js"></script>
@@ -34,7 +41,7 @@
   var requestAnimId;
   
   var initialisation = function() {
-    game.requestGameDatas();
+    game.requestRooms();
     // le code de l'initialisation
     requestAnimId = window.requestAnimationFrame(main); // premier appel de main au rafraîchissement de la page
   }

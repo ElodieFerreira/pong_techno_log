@@ -6,17 +6,14 @@ var game = {
 	netWidth : 6,
 	netColor: "#FFFFFF",
 	groundLayer : null,
+	nameRoom:null,
 	// datas for scorePlayer
 	scorePosPlayer1 : 270,
 	scorePosPlayer2 : 395,
 	isWinned: false,
-  // datas for ball
-  ball : null,
-  //datas for racket
-  //player 1
-  players : [],
-	//On choisi le 
-	//main player
+  	// datas for ball
+	ball : null,
+	players : [],
 	mainPlayer : null,
 	setMainPlayer : function(){
 		var myselect = document.getElementById("choixPlayer");
@@ -26,10 +23,15 @@ var game = {
   	},
 	// socket
 	socket: null,
-    requestGameDatas: function() {
+    requestRooms: function() {
       this.socket = io.connect('http://localhost:3000/');
-      this.socket.emit("requestGameDatas");
-      this.socket.once("requestGameDatas",function(ball,players,isNumberOfPlayerSet){
+      // this.socket.emit("requestGameDatas");
+      this.socket.emit("getRooms");
+	  this.socket.once("rooms",function(rooms){
+	  		console.log(rooms);
+      		game.display.displayRooms(rooms);
+      	});
+	    this.socket.once("requestGameDatas",function(ball,players,isNumberOfPlayerSet){
         game.ball=ball;
         game.players=players;
         game.init()
@@ -37,7 +39,7 @@ var game = {
         	game.display.choosePlayer();
         } else {
         	game.socket.once("updateNumbersOfPlayers",function(){
-        		    location.reload();
+        		/*    location.reload();*/
         	})
         }
       })
@@ -54,29 +56,29 @@ var game = {
 	},
 	choosePlayer: function(){
 		var numberOfPlayer = document.querySelector('input[name="numberOfPlayer"]:checked').value;
+		game.nameRoom = document.getElementById("nameRoom").value;
+		this.socket.emit("createRoom",game.nameRoom,parseInt(numberOfPlayer))
+		this.socket.on("test",function(data){
+			console.log(data);
+		})
 		this.socket.emit("numberOfPlayer",parseInt(numberOfPlayer));
-		window.focus();
 	},
   playerIsReady: function(){
     if(game.mainPlayer!=0&&game.mainPlayer!=null) {
         console.log("player "+game.mainPlayer+" is ready");
-        game.socket.emit("ready",game.mainPlayer-1);
+        game.socket.emit("ready",game.mainPlayer-1,game.nameRoom);
     }
   },
 	//Affichage des scores
 	score : function(){
 		if(game.ball.posX <= -3){
 			this.players[1].score += 1;
-			this.socket.emit('score',this.players[0].score,this.players[1].score);
-			//this.clearLayer(this.scoreLayer);
-			//this.displayScore(this.playerOne.score,this.playerTwo.score);
+			this.socket.emit('scoreUpdated',this.players[0].score,this.players[1].score,game.nameRoom);
 			return true;
 		  }
 		  else if(game.ball.posX >= 700){
 			this.players[0].score += 1;
-			this.socket.emit('score',this.players[0].score,this.players[1].score);
-			//this.clearLayer(this.scoreLayer);
-			//this.displayScore(this.playerOne.score,this.playerTwo.score);
+			this.socket.emit('scoreUpdated',this.players[0].score,this.players[1].score,game.nameRoom);
 			return true;
 		}
 		  return false;
