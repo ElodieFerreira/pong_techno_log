@@ -36,7 +36,7 @@ var game = {
        			game.display.deleteForm();
         } else {
         	game.display.displayError(ball);
-        	abonnement();
+        	subcribeGameDatas();
         }
       });
   	}
